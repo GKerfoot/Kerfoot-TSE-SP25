@@ -1,0 +1,81 @@
+ml () {  module ml "$@"
+}
+module () {  local _mlredir=1;
+ if [ -n "${MODULES_REDIRECT_OUTPUT+x}" ]; then
+ if [ "$MODULES_REDIRECT_OUTPUT" = '0' ]; then
+ _mlredir=0;
+ else
+ if [ "$MODULES_REDIRECT_OUTPUT" = '1' ]; then
+ _mlredir=1;
+ fi;
+ fi;
+ fi;
+ case " $@ " in 
+ *' --no-redirect '*)
+ _mlredir=0
+ ;;
+ *' --redirect '*)
+ _mlredir=1
+ ;;
+ esac;
+ if [ $_mlredir -eq 0 ]; then
+ _module_raw "$@";
+ else
+ _module_raw "$@" 2>&1;
+ fi
+}
+_module_raw () {  eval "$(/usr/bin/tclsh8.6 '/usr/lib/x86_64-linux-gnu/modulecmd.tcl' bash "$@")";
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+#
+# testing.sh    Gretchen Kerfoot    Spring 2025
+#
+# This testing script runs multiple tests for the TSE indexer.
+# It verifies the correct operation of both indexer and indextest programs.
+#
+# The script performs the following:
+#   - Runs indexer on a sample crawler output directory
+#   - Runs indextest to copy the generated index
+#   - Compares the original and copied index files using indexcmp
+#   - Produces output suitable for review
+#
+# Usage:
+#   Run this script from the indexer directory using `make test`
+#   Output will be saved in testing.out
+
+
+#Test 1: Run indexer on sample crawler output directory
+echo "Test 1: Running indexer on letters-0 crawler output"
+Test 1: Running indexer on letters-0 crawler output
+./indexer ../crawler/output/letters-0 index1
+
+#checks if index1 file was created
+if [ -f index1 ]; then
+  echo "index1 created successfully"
+else
+  echo "index1 not created"
+  exit 1
+fi
+index1 created successfully
+
+#Test 2: Run indextest to load and save the index
+echo "Test 2: Running indextest to copy index1 to index2"
+Test 2: Running indextest to copy index1 to index2
+./indextest index1 index2
+
+#checks if index2 file was created
+if [ -f index2 ]; then
+  echo "index2 created successfully"
+else
+  echo "index2 not created"
+  exit 1
+fi
+index2 created successfully
+
+#Test 3: Compare the two index files using indexcmp
+echo "Test 3: Comparing index1 and index2 using indexcmp"
+Test 3: Comparing index1 and index2 using indexcmp
+~/cs50-dev/shared/tse/indexcmp index1 index2
+

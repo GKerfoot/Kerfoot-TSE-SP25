@@ -1,0 +1,6 @@
+*.o
+crawler
+testing.out
+*~
+*.bak
+core
